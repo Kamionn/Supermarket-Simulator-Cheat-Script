@@ -1,5 +1,3 @@
--- Made By GamingResources (QuePro)
-
 local lfs = require("lfs")
 
 -- ASCII Logo Art :p
