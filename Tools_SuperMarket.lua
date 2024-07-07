@@ -23,7 +23,7 @@ local function replaceLines(filePath, searchKey, newValue)
     file:close()
     
     local outFile = assert(io.open(filePath, "w"))
-    for i, line in ipairs(lines) do
+    for _, line in ipairs(lines) do
         if string.find(line, searchKey) then
             local old_value = string.match(line, ':(.-),?')
             if not old_value then
@@ -80,54 +80,27 @@ local function main()
         io.write("Choose an option: ")
         local choice = io.read()
 
-        if choice == '1' then
+        local valueMapping = {
+            ["1"] = {prompt = "Enter the new money value: ", key = '"Money"'},
+            ["2"] = {prompt = "Enter the new level value: ", key = '"CurrentStoreLevel"'},
+            ["3"] = {prompt = "Enter the number of expansions (max 22): ", key = '"StoreUpgradeLevel"', max = 22},
+            ["4"] = {prompt = "Enter the number of expansions (max 6): ", key = '"StorageLevel"', max = 6},
+            ["6"] = {prompt = "Enter the number of days: ", key = '"CurrentDay"'},
+            ["7"] = {prompt = "Enter the number of checkouts: ", key = '"CompletedCheckoutCount"'},
+            ["8"] = {prompt = "Enter the amount of xp: ", key = '"CurrentStorePoint"'},
+        }
+
+        if valueMapping[choice] then
             while true do
-                io.write("Enter the new money value: ")
-                local newMoney = io.read()
-                if tonumber(newMoney) then
-                    replaceLines(saveFilePath, '"Money"', newMoney)
+                io.write(valueMapping[choice].prompt)
+                local newValue = io.read()
+                if tonumber(newValue) and (not valueMapping[choice].max or tonumber(newValue) <= valueMapping[choice].max) then
+                    replaceLines(saveFilePath, valueMapping[choice].key, newValue)
                     break
                 else
                     print("Invalid input. Please enter a valid number.")
                 end
             end
-            os.execute("timeout /t 1 >nul")
-        elseif choice == '2' then
-            while true do
-                io.write("Enter the new level value: ")
-                local newLevel = io.read()
-                if tonumber(newLevel) then
-                    replaceLines(saveFilePath, '"CurrentStoreLevel"', newLevel)
-                    break
-                else
-                    print("Invalid input. Please enter a valid number.")
-                end
-            end
-            os.execute("timeout /t 1 >nul")
-        elseif choice == '3' then
-            while true do
-                io.write("Enter the number of expansions (max 22): ")
-                local newLevel = io.read()
-                if tonumber(newLevel) and tonumber(newLevel) >= 0 and tonumber(newLevel) <= 22 then
-                    replaceLines(saveFilePath, '"StoreUpgradeLevel"', newLevel)
-                    break
-                else
-                    print("Invalid input. Please enter a valid number.")
-                end
-            end
-            os.execute("timeout /t 1 >nul")
-        elseif choice == '4' then
-            while true do
-                io.write("Enter the number of expansions (max 6): ")
-                local newLevel = io.read()
-                if tonumber(newLevel) and tonumber(newLevel) >= 0 and tonumber(newLevel) <= 5 then
-                    replaceLines(saveFilePath, '"StorageLevel"', newLevel)
-                    break
-                else
-                    print("Invalid input. Please enter a valid number.")
-                end
-            end
-            os.execute("timeout /t 1 >nul")
         elseif choice == '5' then
             io.write("Toggle Cheat (Type: on/off): ")
             local toggle = io.read()
@@ -138,54 +111,16 @@ local function main()
             else
                 print("Invalid input. Please enter 'on' or 'off'.")
             end
-            os.execute("timeout /t 1 >nul")
-        elseif choice == '6' then
-            while true do
-                io.write("Enter the number of days: ")
-                local newLevel = io.read()
-                if tonumber(newLevel) then
-                    replaceLines(saveFilePath, '"CurrentDay"', newLevel)
-                    break
-                else
-                    print("Invalid input. Please enter a valid number.")
-                end
-            end
-            os.execute("timeout /t 1 >nul")
-        elseif choice == '7' then
-            while true do
-                io.write("Enter the number of checkouts: ")
-                local newLevel = io.read()
-                if tonumber(newLevel) then
-                    replaceLines(saveFilePath, '"CompletedCheckoutCount"', newLevel)
-                    break
-                else
-                    print("Invalid input. Please enter a valid number.")
-                end
-            end
-            os.execute("timeout /t 1 >nul")
-        elseif choice == '8' then
-            while true do
-                io.write("Enter the amount of xp: ")
-                local newLevel = io.read()
-                if tonumber(newLevel) then
-                    replaceLines(saveFilePath, '"CurrentStorePoint"', newLevel)
-                    break
-                else
-                    print("Invalid input. Please enter a valid number.")
-                end
-            end
-            os.execute("timeout /t 1 >nul")
         elseif choice == '9' then
             backupFile(saveFilePath)
-            os.execute("timeout /t 1 >nul")
         elseif choice == '10' then
             print("Exiting program...")
             os.execute("timeout /t 2 >nul")
             break
         else
             print("Invalid choice. Please choose again.")
-            os.execute("timeout /t 1 >nul")
         end
+        os.execute("timeout /t 1 >nul")
     end
 end
 
